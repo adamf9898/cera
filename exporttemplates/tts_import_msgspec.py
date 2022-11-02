@@ -137,6 +137,7 @@ class saga(TaggedBase):
     cmc: float
     type_line: str
     image_uris: Image_URIs
+    oracle_text: str
 
 
 class adventure(TaggedBase):
@@ -329,6 +330,16 @@ def make_oracle_normal(card_data: Union[normal, meld]):
     )
     return descriptionHold
 
+def make_oracle_saga(card_data: Union[saga, Class]):
+    descriptionHold = (
+        f"[b]{card_data.name} {card_data.mana_cost}[/b]"
+        + "\n"
+        + f"{card_data.type_line} {plus_rarity(card_data.rarity)}"
+        + "\n"
+        + italicize_reminder(card_data.oracle_text)
+    )
+    return descriptionHold
+
 
 def make_oracle_splitadventure(card_data: Union[split, adventure]):
     descriptionHold = (
@@ -507,9 +518,7 @@ def tts_parse(o: AllCardTypes) -> dict[str, dict]:
         isinstance(o, normal)
         or isinstance(o, meld)
         or isinstance(o, leveler)
-        or isinstance(o, Class)
         or isinstance(o, host)
-        or isinstance(o, saga)
     ):
         extra_obj = {
             "oracle_text": make_oracle_normal(o),
@@ -518,6 +527,16 @@ def tts_parse(o: AllCardTypes) -> dict[str, dict]:
             "toughness": o.toughness if o.toughness is not None else 0,
             "mana_cost": o.mana_cost,
             "loyalty": o.loyalty if o.loyalty is not None else 0,
+            "layout": "normal",
+        }
+    elif isinstance(o, Class) or isinstance(o, saga):
+        extra_obj = {
+            "oracle_text": make_oracle_saga(o),
+            "image_uris": {"normal": o.image_uris.normal, "small": o.image_uris.small},
+            "power": 0,
+            "toughness": 0,
+            "mana_cost": o.mana_cost,
+            "loyalty": 0,
             "layout": "normal",
         }
     card_obj = {**card_obj, **extra_obj}

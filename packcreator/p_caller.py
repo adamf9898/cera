@@ -1,6 +1,6 @@
 import json
 
-from exporttemplates import tts_output, tts_import
+from exporttemplates import tts_output, tts_import, tts_import_msgspec
 from packcreator import p_creator, point_slicer
 from webimporter import planesculptors
 
@@ -73,7 +73,7 @@ def get_packs_v3(setcode, num_packs, land_pack=False):
     all_cn_sets = []
     for p in all_packs:
         all_cn_sets += p[0]
-    set_info = {**tts_import.ijson_collection(all_cn_sets, True), **planesculptors.ps_collection(all_cn_sets, True)}
+    set_info = {**tts_import_msgspec.msgspec_collection(all_cn_sets, True), **planesculptors.ps_collection(all_cn_sets, True)}
     for p in all_packs:
         new_colle = []
         for crd in p[0]:

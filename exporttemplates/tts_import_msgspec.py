@@ -26,6 +26,7 @@ class Image_URIs(msgspec.Struct):
 class CardFace(msgspec.Struct):
     """Spec describing a card face."""
 
+    name: str
     mana_cost: str
     type_line: Optional[str] = None
     cmc: Optional[float] = None
@@ -115,6 +116,7 @@ class leveler(TaggedBase):
     type_line: str
     image_uris: Image_URIs
     power: Optional[str] = None
+    loyalty: Optional[str] = None
     toughness: Optional[str] = None
 
 
@@ -197,8 +199,15 @@ class augment(TaggedBase):
 
 class host(TaggedBase):
     """Spec describing split card"""
-
-    pass
+    oracle_id: str
+    mana_cost: str
+    image_uris: Image_URIs
+    type_line: str
+    cmc: float
+    loyalty: Optional[str] = None
+    oracle_text: Optional[str] = None
+    power: Optional[str] = None
+    toughness: Optional[str] = None
 
 
 class art_series(TaggedBase):
@@ -432,12 +441,12 @@ def tts_parse(o: AllCardTypes) -> dict[str, dict]:
             "card_faces": [
                 {
                     "name": i.name,
-                    "type_line": i.type_line,
+                    "type_line": i.type_line if i.type_line is not None else "",
                     "oracle_text": make_oracle_dfc(o, c == 0),
                     "image_uris": {"normal": i.image_uris.normal, "small": i.image_uris.small},
                     "power": i.power if i.power is not None else 0,
                     "toughness": i.toughness if i.toughness is not None else 0,
-                    "mana_cost": i.mana_cost,
+                    "mana_cost": i.mana_cost if i.mana_cost is not None else "",
                     "loyalty": i.loyalty if i.loyalty is not None else 0,
                 }
                 for c, i in enumerate(o.card_faces)
@@ -460,12 +469,12 @@ def tts_parse(o: AllCardTypes) -> dict[str, dict]:
             "card_faces": [
                 {
                     "name": i.name,
-                    "type_line": i.type_line,
+                    "type_line": i.type_line if i.type_line is not None else "",
                     "oracle_text": make_oracle_dfc(o, c == 0),
                     "image_uris": {"normal": o.image_uris.normal, "small": o.image_uris.small},
                     "power": i.power if i.power is not None else 0,
                     "toughness": i.toughness if i.toughness is not None else 0,
-                    "mana_cost": i.mana_cost,
+                    "mana_cost": i.mana_cost if i.mana_cost is not None else "",
                     "loyalty": i.loyalty if i.loyalty is not None else 0,
                 }
                 for c, i in enumerate(o.card_faces)
@@ -497,14 +506,14 @@ def tts_parse(o: AllCardTypes) -> dict[str, dict]:
             "card_faces": [
                 {
                     "name": i.name,
-                    "type_line": i.type_line,
+                    "type_line": i.type_line if i.type_line is not None else "",
                     "oracle_text": make_oracle_dfc(o, c == 0),
                     "image_uris": {
                         "normal": i.image_uris.normal if i.image_uris is not None else "https://i.imgur.com/TyC0LWj.jpg"
                     },
                     "power": 0,
                     "toughness": 0,
-                    "mana_cost": i.mana_cost,
+                    "mana_cost": i.mana_cost if i.mana_cost is not None else "",
                     "loyalty": 0,
                 }
                 for c, i in enumerate(o.card_faces)
